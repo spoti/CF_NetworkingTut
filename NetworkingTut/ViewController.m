@@ -7,8 +7,10 @@
 //
 
 #import "ViewController.h"
+#import <SVProgressHUD/SVProgressHUD.h>
+#import "DataController.h"
 
-@interface ViewController ()
+@interface ViewController () <DataControllerDelegate>
 
 @end
 
@@ -17,11 +19,33 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view, typically from a nib.
+    
+    self.view.backgroundColor = [UIColor lightGrayColor];
 }
 
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
+- (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
+    
+    [[DataController sharedInstance] setDelegate:self];
+    [[DataController sharedInstance] loadData];
+}
+
+#pragma mark - DataControllerDelegate
+
+- (void)requesting {
+    [SVProgressHUD show];
+}
+
+- (void)batchComplete {
+    [SVProgressHUD showSuccessWithStatus:@"All operations in batch complete"];
+}
+
+- (void)status:(NSString *)status {
+    [SVProgressHUD showWithStatus:status];
+}
+
+- (void)errorOccured:(NSError *)error {
+    [SVProgressHUD showErrorWithStatus:[NSString stringWithFormat:@"Error: %@", [error localizedDescription]]];
 }
 
 @end
